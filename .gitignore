@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/fixedstring
+fixedstring.so
+fixedstring.dylib
+fixedstring.dll
+fixedstring.a
+fixedstring.lib
+fixedstring-test-*
+*.exe
+*.o
+*.obj
+*.lst
+lint.txt

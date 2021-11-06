@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"Su"
+	],
+	"copyright": "Copyright © 2021, Su",
+	"description": "a @safe, @nogc-compatible template string type",
+	"license": "AGPL-3.0 or later",
+	"name": "fixedstring"
+}
