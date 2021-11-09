@@ -12,7 +12,7 @@ struct FixedString(size_t maxSize)
 {
 	invariant (length <= data.length);
 
-	private enum size = maxSize;
+	enum size = maxSize; ///
 
 	size_t length = 0; ///
 	private char[maxSize] data = ' ';
