@@ -51,31 +51,25 @@ struct FixedString(size_t maxSize)
 
 	/// ditto
 	public void opOpAssign(string op)(in char[] rhs) @safe @nogc nothrow pure if (op == "~")
-	in (rhs.length <= maxSize)
+	in (length + rhs.length <= maxSize)
 	{
-		if (length + rhs.length <= maxSize)
+		foreach (i, char c; rhs)
 		{
-			foreach (i, char c; rhs)
-			{
-				data[length + i] = c;
-			}
-			length += rhs.length;
+			data[length + i] = c;
 		}
+		length += rhs.length;
 	}
 
 	/// ditto
 	public void opOpAssign(string op, T:
 			FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure if (op == "~")
-	in (rhs.length <= maxSize)
+	in (length + rhs.length <= maxSize)
 	{
-		if (length + rhs.length <= maxSize)
+		foreach (i, char c; rhs)
 		{
-			foreach (i, char c; rhs)
-			{
-				data[length + i] = c;
-			}
-			length += rhs.length;
+			data[length + i] = c;
 		}
+		length += rhs.length;
 	}
 
 	/// array features...
