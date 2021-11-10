@@ -87,9 +87,9 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public char[maxSize] opIndex() @safe @nogc nothrow const pure
+	public const(char)[] opIndex() @safe @nogc nothrow const pure
 	{
-		return data[];
+		return data[0 .. length];
 	}
 
 	/// ditto
@@ -307,6 +307,7 @@ private string good(in int n, in string parameters, in bool isConst)
 	auto a = FixedString!8(temp);
 	assert(a[0] == 'c');
 	assert(a == "cool");
+	assert (a[] == "cool");
 	assert(a[0 .. $] == "cool");
 
 	a[2] = 'd';
