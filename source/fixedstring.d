@@ -21,43 +21,31 @@ struct FixedString(size_t maxSize)
 	this(in char[] rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
+		data[0 .. rhs.length] = rhs[];
 		length = rhs.length;
-		foreach (i, char c; rhs)
-		{
-			data[i] = c;
-		}
 	}
 
 	/// assignment
 	public void opAssign(in char[] rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
+		data[0 .. rhs.length] = rhs[];
 		length = rhs.length;
-		foreach (i, char c; rhs)
-		{
-			data[i] = c;
-		}
 	}
 
 	/// ditto
 	public void opAssign(T : FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
+		data[0 .. rhs.length] = rhs[];
 		length = rhs.length;
-		foreach (i, char c; rhs)
-		{
-			data[i] = c;
-		}
 	}
 
 	/// ditto
 	public void opOpAssign(string op)(in char[] rhs) @safe @nogc nothrow pure if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
-		foreach (i, char c; rhs)
-		{
-			data[length + i] = c;
-		}
+		data[length .. length + rhs.length] = rhs[];
 		length += rhs.length;
 	}
 
@@ -66,10 +54,7 @@ struct FixedString(size_t maxSize)
 			FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
-		foreach (i, char c; rhs)
-		{
-			data[length + i] = c;
-		}
+		data[length .. length + rhs.length] = rhs[];
 		length += rhs.length;
 	}
 
@@ -113,7 +98,7 @@ struct FixedString(size_t maxSize)
 	/// equality
 	public bool opEquals(T : FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
 	{
-		return data[0 .. length] == rhs.data[0 .. rhs.length];
+		return this[] == rhs[];
 	}
 
 	/// ditto
@@ -123,15 +108,8 @@ struct FixedString(size_t maxSize)
 		{
 			return false;
 		}
-		foreach (i, char c; data[0 .. length])
-		{
-			if (s[i] != c)
-			{
-				return false;
-			}
-		}
 
-		return true;
+		return this[] == s[];
 	}
 
 	/// concatenation. prefer this over the ~ operator whenever you know what size the result will be ahead of time - the operator version always uses the size of the maximum possible result.
@@ -141,16 +119,8 @@ struct FixedString(size_t maxSize)
 	{
 		FixedString!(s) result;
 
-		result.length = length + rhs.length;
-		foreach (i, char c; data[0 .. length])
-		{
-			result.data[i] = c;
-		}
-
-		foreach (i, char c; rhs.data[0 .. rhs.length])
-		{
-			result.data[length + i] = c;
-		}
+		result = this[];
+		result ~= rhs[];
 
 		return result;
 	}
