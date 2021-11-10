@@ -137,6 +137,7 @@ struct FixedString(size_t maxSize)
 	/// concatenation. prefer this over the ~ operator whenever you know what size the result will be ahead of time - the operator version always uses the size of the maximum possible result.
 	public auto concat(size_t s, T:
 			FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
+	in(s >= length + rhs.length)
 	{
 		FixedString!(s) result;
 
@@ -365,6 +366,7 @@ unittest
 	import core.exception : AssertError;
 	assertThrown!AssertError(FixedString!2("too long"));
 
-	FixedString!2 a;
+	FixedString!2 a = "uh";
 	assertThrown!AssertError(a[69] = 'a');
+	assertThrown!AssertError(a.concat!1(a));
 }
