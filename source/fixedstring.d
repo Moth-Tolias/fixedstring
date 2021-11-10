@@ -18,10 +18,11 @@ struct FixedString(size_t maxSize)
 	private char[maxSize] data = ' ';
 
 	/// constructor
-	this(in char[] s) @safe @nogc nothrow pure
+	this(in char[] rhs) @safe @nogc nothrow pure
+	in (rhs.length <= maxSize)
 	{
-		length = s.length;
-		foreach (i, char c; s)
+		length = rhs.length;
+		foreach (i, char c; rhs)
 		{
 			data[i] = c;
 		}
@@ -100,6 +101,7 @@ struct FixedString(size_t maxSize)
 
 	/// ditto
 	public void opIndexAssign(in char value, in size_t index) @safe @nogc nothrow pure
+	in(index <= maxSize)
 	{
 		if (index >= length)
 		{
@@ -355,4 +357,14 @@ private string good(in int n, in string parameters, in bool isConst)
 	b = "beef";
 	a ~= b;
 	assert(a == "deadbeef");
+}
+
+unittest
+{
+	import std.exception;
+	import core.exception : AssertError;
+	assertThrown!AssertError(FixedString!2("too long"));
+
+	FixedString!2 a;
+	assertThrown!AssertError(a[69] = 'a');
 }
