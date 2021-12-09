@@ -331,7 +331,7 @@ private string good(in int n, in string parameters, in bool isConst)
 	assert(a == "deadbeef");
 }
 
-unittest
+@system unittest
 {
 	import std.exception;
 	import core.exception : AssertError;
