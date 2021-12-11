@@ -50,6 +50,14 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
+	public void opOpAssign(string op)(in char rhs) @safe @nogc nothrow pure if (op == "~")
+	in (length + 1 <= maxSize)
+	{
+		data[length] = rhs;
+		length += 1;
+	}
+
+	/// ditto
 	public void opOpAssign(string op, T:
 			FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure if (op == "~")
 	in (length + rhs.length <= maxSize)
@@ -290,7 +298,8 @@ private string good(in int n, in string parameters, in bool isConst)
 	assert(a == "codl");
 
 	FixedString!10 b;
-	b = " is nice";
+	b = " is nic";
+	b ~= 'e';
 	assert(a ~ b == "codl is nice");
 	assert(a.concat!16(b) == "codl is nice");
 	assert(a ~ b == a.concat!16(b));
