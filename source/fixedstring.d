@@ -42,7 +42,8 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public void opOpAssign(string op)(in char[] rhs) @safe @nogc nothrow pure if (op == "~")
+	public void opOpAssign(string op)(in char[] rhs) @safe @nogc nothrow pure
+	if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
 		data[length .. length + rhs.length] = rhs[];
@@ -50,7 +51,8 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public void opOpAssign(string op)(in char rhs) @safe @nogc nothrow pure if (op == "~")
+	public void opOpAssign(string op)(in char rhs) @safe @nogc nothrow pure
+	if (op == "~")
 	in (length + 1 <= maxSize)
 	{
 		data[length] = rhs;
@@ -58,8 +60,8 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public void opOpAssign(string op, T:
-			FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure if (op == "~")
+	public void opOpAssign(string op, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure
+	if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
 		data[length .. length + rhs.length] = rhs[];
@@ -94,7 +96,7 @@ struct FixedString(size_t maxSize)
 
 	/// ditto
 	public void opIndexAssign(in char value, in size_t index) @safe @nogc nothrow pure
-	in(index <= maxSize)
+	in (index <= maxSize)
 	{
 		if (index >= length)
 		{
@@ -121,9 +123,8 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// concatenation. prefer this over the ~ operator whenever you know what size the result will be ahead of time - the operator version always uses the size of the maximum possible result.
-	public auto concat(size_t s, T:
-			FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
-	in(s >= length + rhs.length)
+	public auto concat(size_t s, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
+	in (s >= length + rhs.length)
 	{
 		FixedString!(s) result;
 
@@ -134,9 +135,8 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// concatenation operator
-	public auto opBinary(string op, T:
-			FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure 
-			if (op == "~")
+	public auto opBinary(string op, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
+	if (op == "~")
 	{
 		return concat!(size + rhs.size)(rhs);
 	}
@@ -151,7 +151,7 @@ struct FixedString(size_t maxSize)
 	public size_t toHash() @safe @nogc nothrow const pure
 	{
 		ulong result = length;
-		foreach(char c; data[0 .. length])
+		foreach (char c; data[0 .. length])
 		{
 			result += c;
 		}
@@ -218,7 +218,7 @@ private string opApplyWorkaround()
 {
 	// dfmt off
 	return paramNumbers("") ~
-	paramNumbers("@safe") ~ 
+	paramNumbers("@safe") ~
 	paramNumbers("@nogc") ~
 	paramNumbers("@safe @nogc") ~
 	paramNumbers("nothrow") ~
@@ -226,7 +226,7 @@ private string opApplyWorkaround()
 	paramNumbers("@nogc nothrow") ~
 	paramNumbers("@safe @nogc nothrow") ~
 	paramNumbers("pure") ~
-	paramNumbers("pure @safe") ~ 
+	paramNumbers("pure @safe") ~
 	paramNumbers("pure @nogc") ~
 	paramNumbers("pure @safe @nogc") ~
 	paramNumbers("pure nothrow") ~
@@ -285,7 +285,7 @@ private string good(in int n, in string parameters, in bool isConst)
 	auto a = FixedString!8(temp);
 	assert(a[0] == 'c');
 	assert(a == "cool");
-	assert (a[] == "cool");
+	assert(a[] == "cool");
 	assert(a[0 .. $] == "cool");
 
 	a[2] = 'd';
@@ -344,6 +344,7 @@ private string good(in int n, in string parameters, in bool isConst)
 {
 	import std.exception;
 	import core.exception : AssertError;
+
 	assertThrown!AssertError(FixedString!2("too long"));
 
 	FixedString!2 a = "uh";
