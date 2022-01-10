@@ -12,7 +12,7 @@ void main() @safe @nogc nothrow
 
 	foo.length = 9;
 
-	auto bar = FixedString!16("neat");
+	auto bar = FixedString!4("neat");
 	assert (foo ~ bar == "dlang is neat");
 }
 ```

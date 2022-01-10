@@ -374,7 +374,7 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	foo.length = 9;
 
-	auto bar = FixedString!16("neat");
+	auto bar = FixedString!4("neat");
 	assert (foo ~ bar == "dlang is neat");
 }
 
