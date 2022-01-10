@@ -10,35 +10,50 @@ module fixedstring;
 
 struct FixedString(size_t maxSize)
 {
-	invariant (length <= data.length);
+	invariant (_length <= data.length);
 
 	enum size = maxSize; ///
 
-	size_t length = 0; ///
+	private size_t _length;
 	private char[maxSize] data = ' ';
 
+	public size_t length() const pure @nogc @safe ///
+	{
+		return _length;
+	}
+
+	public void length(in size_t rhs) pure @safe @nogc ///
+	in (rhs <= maxSize)
+	{
+		if (rhs >= length)
+		{
+			data[length .. rhs] = char.init;
+		}
+		_length = rhs;
+	}
+
 	/// constructor
-	this(in char[] rhs) @safe @nogc nothrow pure
+	public this(in char[] rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
-		data[0 .. rhs.length] = rhs[];
 		length = rhs.length;
+		data[0 .. length] = rhs[];
 	}
 
 	/// assignment
 	public void opAssign(in char[] rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
-		data[0 .. rhs.length] = rhs[];
 		length = rhs.length;
+		data[0 .. length] = rhs[];
 	}
 
 	/// ditto
 	public void opAssign(T : FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
-		data[0 .. rhs.length] = rhs[];
 		length = rhs.length;
+		data[0 .. length] = rhs[];
 	}
 
 	/// ditto
@@ -46,8 +61,9 @@ struct FixedString(size_t maxSize)
 	if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
-		data[length .. length + rhs.length] = rhs[];
-		length += rhs.length;
+		immutable oldLength = length;
+		length = length + rhs.length;
+		data[oldLength .. length] = rhs[];
 	}
 
 	/// ditto
@@ -55,8 +71,8 @@ struct FixedString(size_t maxSize)
 	if (op == "~")
 	in (length + 1 <= maxSize)
 	{
-		data[length] = rhs;
-		length += 1;
+		length = length + 1;
+		data[length - 1] = rhs;
 	}
 
 	/// ditto
@@ -64,8 +80,9 @@ struct FixedString(size_t maxSize)
 	if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
-		data[length .. length + rhs.length] = rhs[];
-		length += rhs.length;
+		immutable oldLength = length;
+		length = length + rhs.length;
+		data[oldLength .. length] = rhs[];
 	}
 
 	/// array features...
@@ -76,7 +93,8 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public size_t opDollar(size_t pos)() @safe @nogc nothrow const pure if (pos == 0)
+	public size_t opDollar(size_t pos)() @safe @nogc nothrow const pure
+	if (pos == 0)
 	{
 		return length;
 	}
@@ -177,7 +195,7 @@ struct FixedString(size_t maxSize)
 		{
 			data[i] = data[i + 1];
 		}
-		--length;
+		length = length - 1;
 	}
 
 	mixin(opApplyWorkaround);
@@ -292,7 +310,13 @@ private string good(in int n, in string parameters, in bool isConst)
 	assert(a == "codl");
 
 	a[5] = 'd';
-	assert(a == "codl d");
+	assert(a == "codl\xffd");
+
+	a.length = 4;
+	assert(a == "codl");
+
+	a.length = 6;
+	assert(a == "codl\xff\xff");
 
 	a.length = 4;
 	assert(a == "codl");
