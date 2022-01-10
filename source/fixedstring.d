@@ -17,12 +17,14 @@ struct FixedString(size_t maxSize)
 	private size_t _length;
 	private char[maxSize] data = ' ';
 
-	public size_t length() const pure @nogc @safe ///
+	///
+	public size_t length() const pure @nogc @safe
 	{
 		return _length;
 	}
 
-	public void length(in size_t rhs) pure @safe @nogc ///
+	/// ditto
+	public void length(in size_t rhs) pure @safe @nogc
 	in (rhs <= maxSize)
 	{
 		if (rhs >= length)
@@ -308,6 +310,7 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	a[2] = 'd';
 	assert(a == "codl");
+	assert(a != "");
 
 	a[5] = 'd';
 	assert(a == "codl\xffd");
@@ -362,6 +365,12 @@ private string good(in int n, in string parameters, in bool isConst)
 	b = "beef";
 	a ~= b;
 	assert(a == "deadbeef");
+}
+
+@safe nothrow unittest
+{
+	auto a = FixedString!16("bepis");
+	assert (a.toString == "bepis");
 }
 
 @system unittest
