@@ -365,6 +365,17 @@ private string good(in int n, in string parameters, in bool isConst)
 	b = "beef";
 	a ~= b;
 	assert(a == "deadbeef");
+
+	// readme example code
+	FixedString!14 foo = "clang";
+	foo[0] = 'd';
+	foo ~= " is cool";
+	assert (foo == "dlang is cool");
+
+	foo.length = 9;
+
+	auto bar = FixedString!16("neat");
+	assert (foo ~ bar == "dlang is neat");
 }
 
 @safe nothrow unittest
