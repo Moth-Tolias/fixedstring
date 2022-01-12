@@ -8,6 +8,12 @@ module fixedstring;
 * Copyright: Susan, 2021
 */
 
+/// short syntax.
+auto FixedString(string s)()
+{
+	return FixedString!(s.length)(s);
+}
+
 struct FixedString(size_t maxSize)
 {
 	invariant (_length <= data.length);
@@ -366,7 +372,7 @@ private string good(in int n, in string parameters, in bool isConst)
 	a ~= b;
 	assert(a == "deadbeef");
 
-	assert(FixedString!10("aéiou") == "aéiou");
+	assert(FixedString!"aéiou" == "aéiou");
 
 	// readme example code
 	FixedString!14 foo = "clang";
@@ -376,7 +382,7 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	foo.length = 9;
 
-	auto bar = FixedString!4("neat");
+	auto bar = FixedString!"neat";
 	assert (foo ~ bar == "dlang is neat");
 }
 
