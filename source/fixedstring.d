@@ -366,6 +366,8 @@ private string good(in int n, in string parameters, in bool isConst)
 	a ~= b;
 	assert(a == "deadbeef");
 
+	assert(FixedString!10("aéiou") == "aéiou");
+
 	// readme example code
 	FixedString!14 foo = "clang";
 	foo[0] = 'd';
