@@ -8,20 +8,22 @@ module fixedstring;
 * Copyright: Susan, 2021
 */
 
+import std.traits: isSomeChar;
+
 /// short syntax.
 auto FixedString(string s)()
 {
 	return FixedString!(s.length)(s);
 }
 
-struct FixedString(size_t maxSize)
+struct FixedString(size_t maxSize, CharT = char)
 {
 	invariant (_length <= data.length);
 
 	enum size = maxSize; ///
 
 	private size_t _length;
-	private char[maxSize] data = ' ';
+	private CharT[maxSize] data = ' ';
 
 	///
 	public size_t length() const pure @nogc @safe
@@ -35,13 +37,13 @@ struct FixedString(size_t maxSize)
 	{
 		if (rhs >= length)
 		{
-			data[length .. rhs] = char.init;
+			data[length .. rhs] = CharT.init;
 		}
 		_length = rhs;
 	}
 
 	/// constructor
-	public this(in char[] rhs) @safe @nogc nothrow pure
+	public this(in CharT[] rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
 		length = rhs.length;
@@ -49,7 +51,7 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// assignment
-	public void opAssign(in char[] rhs) @safe @nogc nothrow pure
+	public void opAssign(in CharT[] rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
 		length = rhs.length;
@@ -65,7 +67,7 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public void opOpAssign(string op)(in char[] rhs) @safe @nogc nothrow pure
+	public void opOpAssign(string op)(in CharT[] rhs) @safe @nogc nothrow pure
 	if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
@@ -75,7 +77,7 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public void opOpAssign(string op)(in char rhs) @safe @nogc nothrow pure
+	public void opOpAssign(string op)(in CharT rhs) @safe @nogc nothrow pure
 	if (op == "~")
 	in (length + 1 <= maxSize)
 	{
@@ -108,27 +110,27 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public const(char)[] opIndex() @safe @nogc nothrow const pure
+	public const(CharT)[] opIndex() @safe @nogc nothrow const pure
 	{
 		return data[0 .. length];
 	}
 
 	/// ditto
-	public char opIndex(in size_t index) @safe @nogc nothrow const pure
+	public CharT opIndex(in size_t index) @safe @nogc nothrow const pure
 	in (index < length)
 	{
 		return data[index];
 	}
 
 	/// ditto
-	public void opIndexAssign(in char value, in size_t index) @safe @nogc nothrow pure
+	public void opIndexAssign(in CharT rhs, in size_t index) @safe @nogc nothrow pure
 	in (index <= maxSize)
 	{
 		if (index >= length)
 		{
 			length = index + 1;
 		}
-		data[index] = value;
+		data[index] = rhs;
 	}
 
 	/// equality
@@ -138,7 +140,7 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public bool opEquals(in char[] s) @safe @nogc nothrow const pure
+	public bool opEquals(in CharT[] s) @safe @nogc nothrow const pure
 	{
 		if (length != s.length)
 		{
@@ -167,17 +169,20 @@ struct FixedString(size_t maxSize)
 		return concat!(size + rhs.size)(rhs);
 	}
 
-	///
-	public string toString() @safe nothrow const pure
+	static if (isSomeChar!CharT)
 	{
-		return data[0 .. length].idup;
+		///
+		public const(CharT)[] toString() @safe nothrow const pure
+		{
+			return data[0 .. length].idup;
+		}
 	}
 
 	///
 	public size_t toHash() @safe @nogc nothrow const pure
 	{
 		ulong result = length;
-		foreach (char c; data[0 .. length])
+		foreach (CharT c; data[0 .. length])
 		{
 			result += c;
 		}
@@ -191,7 +196,7 @@ struct FixedString(size_t maxSize)
 	}
 
 	/// ditto
-	public char front() @safe @nogc nothrow const pure
+	public CharT front() @safe @nogc nothrow const pure
 	{
 		return data[0];
 	}
@@ -228,10 +233,10 @@ private string delegateType(in int n, in string attributes)
 	switch (n)
 	{
 	case 1:
-		params = "ref char";
+		params = "ref CharT";
 		break;
 	case 2:
-		params = "ref int, ref char";
+		params = "ref int, ref CharT";
 		break;
 	default:
 		assert(false);
@@ -291,7 +296,7 @@ private string good(in int n, in string parameters, in bool isConst)
 
 			for (int i = 0; i != length; ++i)
 			{
-				char temp = data[i];
+				CharT temp = data[i];
 				" ~ resultAssign(n) ~ "
 				if (result)
 				{
@@ -391,6 +396,13 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	auto bar = FixedString!"neat";
 	assert (foo ~ bar == "dlang is neat");
+
+	// wchars and dchars are also supported
+	assert(FixedString!(5, wchar)("áéíóú") == "áéíóú");
+
+	// in fact, any type is:
+	immutable int[4] intArray = [1, 2, 3, 4];
+	assert(FixedString!(5, int)(intArray) == intArray);
 }
 
 @safe nothrow unittest

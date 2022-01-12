@@ -14,6 +14,13 @@ void main() @safe @nogc nothrow
 
 	auto bar = FixedString!"neat";
 	assert (foo ~ bar == "dlang is neat");
+
+	// wchars and dchars are also supported
+	assert(FixedString!(5, wchar)("áéíóú") == "áéíóú");
+
+	// in fact, any type is:
+	immutable int[4] intArray = [1, 2, 3, 4];
+	assert(FixedString!(5, int)(intArray) == intArray);
 }
 ```
 
