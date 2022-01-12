@@ -374,6 +374,13 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	assert(FixedString!"aéiou" == "aéiou");
 
+	char[4] dead = "dead";
+	immutable(char)[4] beef = "beef";
+
+	FixedString!4 deader = dead;
+	FixedString!4 beefer = beef;
+	assert(deader ~ beefer == "deadbeef");
+
 	// readme example code
 	FixedString!14 foo = "clang";
 	foo[0] = 'd';
