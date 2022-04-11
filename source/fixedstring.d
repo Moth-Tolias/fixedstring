@@ -1,5 +1,3 @@
-module fixedstring;
-
 /**
 * a @safe, @nogc-compatible template string type.
 * Authors: Susan
@@ -7,6 +5,7 @@ module fixedstring;
 * Licence: AGPL-3.0 or later
 * Copyright: Susan, 2021
 */
+module fixedstring;
 
 import std.traits: isSomeChar;
 
@@ -16,6 +15,7 @@ auto FixedString(string s)()
 	return FixedString!(s.length)(s);
 }
 
+///
 struct FixedString(size_t maxSize, CharT = char)
 {
 	invariant (_length <= data.length);
