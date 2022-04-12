@@ -12,7 +12,8 @@ import std.traits: isSomeChar;
 /// short syntax.
 auto FixedString(string s)()
 {
-	return FixedString!(s.length)(s);
+	import std.math.algebraic: nextPow2;
+	return FixedString!(nextPow2(s.length))(s);
 }
 
 ///
@@ -160,7 +161,7 @@ struct FixedString(size_t maxSize, CharT = char)
 		return this[] == s[];
 	}
 
-	/// concatenation. prefer this over the ~ operator whenever you know what size the result will be ahead of time - the operator version always uses the size of the maximum possible result.
+	/// concatenation. note that you should probably use the ~ operator instead - only use this version when you are pressed for ram and aren't making many calls, or you will end up with template bloat.
 	public auto concat(size_t s, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
 	in (s >= length + rhs.length)
 	{
@@ -172,11 +173,12 @@ struct FixedString(size_t maxSize, CharT = char)
 		return result;
 	}
 
-	/// concatenation operator
+	/// concatenation operator. generally, you should prefer this version.
 	public auto opBinary(string op, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
 	if (op == "~")
 	{
-		return concat!(size + rhs.size)(rhs);
+		import std.math.algebraic: nextPow2;
+		return concat!(nextPow2(size + rhs.size))(rhs);
 	}
 
 	static if (isSomeChar!CharT)
