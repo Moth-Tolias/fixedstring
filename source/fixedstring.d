@@ -16,6 +16,16 @@ auto FixedString(string s)()
 }
 
 ///
+@safe @nogc nothrow unittest
+{
+	enum testString = "dlang is good";
+	immutable foo = FixedString!(testString);
+	immutable bar = FixedString!16("dlang is good");
+
+	assert(foo == bar);
+}
+
+///
 struct FixedString(size_t maxSize, CharT = char)
 {
 	invariant (_length <= data.length);
@@ -214,6 +224,27 @@ struct FixedString(size_t maxSize, CharT = char)
 	mixin(opApplyWorkaround);
 }
 
+/// readme example code
+@safe @nogc nothrow unittest
+{
+	FixedString!14 foo = "clang";
+	foo[0] = 'd';
+	foo ~= " is cool";
+	assert (foo == "dlang is cool");
+
+	foo.length = 9;
+
+	immutable bar = FixedString!"neat";
+	assert (foo ~ bar == "dlang is neat");
+
+	// wchars and dchars are also supported
+	assert(FixedString!(5, wchar)("áéíóú") == "áéíóú");
+
+	// in fact, any type is:
+	immutable int[4] intArray = [1, 2, 3, 4];
+	assert(FixedString!(5, int)(intArray) == intArray);
+}
+
 private string resultAssign(in int n)
 {
 	switch (n)
@@ -223,7 +254,7 @@ private string resultAssign(in int n)
 	case 2:
 		return "result = dg(i, temp);";
 	default:
-		assert(false);
+		assert(false, "this will never happen.");
 	}
 }
 
@@ -239,7 +270,7 @@ private string delegateType(in int n, in string attributes)
 		params = "ref int, ref CharT";
 		break;
 	default:
-		assert(false);
+		assert(false, "unsupported number of parameters.");
 	}
 
 	return "delegate(" ~ params ~ ") " ~ attributes;
@@ -379,35 +410,17 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	assert(FixedString!"aéiou" == "aéiou");
 
-	char[4] dead = "dead";
+	immutable char[4] dead = "dead";
 	immutable(char)[4] beef = "beef";
 
-	FixedString!4 deader = dead;
-	FixedString!4 beefer = beef;
+	immutable FixedString!4 deader = dead;
+	immutable FixedString!4 beefer = beef;
 	assert(deader ~ beefer == "deadbeef");
-
-	// readme example code
-	FixedString!14 foo = "clang";
-	foo[0] = 'd';
-	foo ~= " is cool";
-	assert (foo == "dlang is cool");
-
-	foo.length = 9;
-
-	auto bar = FixedString!"neat";
-	assert (foo ~ bar == "dlang is neat");
-
-	// wchars and dchars are also supported
-	assert(FixedString!(5, wchar)("áéíóú") == "áéíóú");
-
-	// in fact, any type is:
-	immutable int[4] intArray = [1, 2, 3, 4];
-	assert(FixedString!(5, int)(intArray) == intArray);
 }
 
 @safe nothrow unittest
 {
-	auto a = FixedString!16("bepis");
+	immutable a = FixedString!16("bepis");
 	assert (a.toString == "bepis");
 }
 
