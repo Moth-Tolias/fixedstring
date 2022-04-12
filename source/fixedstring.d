@@ -424,6 +424,16 @@ private string good(in int n, in string parameters, in bool isConst)
 {
 	immutable a = FixedString!16("bepis");
 	assert (a.toString == "bepis");
+
+	int[FixedString!16] table;
+	table[a] = 1;
+
+	immutable b = FixedString!16("conk");
+	table[b] = 2;
+
+	assert(table[a] == 1);
+	assert(table[b] == 2);
+
 }
 
 @system unittest
