@@ -230,19 +230,20 @@ private struct FixedStringRangeInterface(DataType)
 {
 	private const(DataType)[] source;
 	private size_t startIndex;
-	private size_t length;
+	private size_t length_;
+	size_t length() { return length_; }
 
 	@disable this();
 
 	package this(in DataType[] source)
 	{
 		this.source = source;
-		this.length = source.length;
+		this.length_ = source.length;
 	}
 
 	bool empty() const
 	{
-		return length == 0;
+		return length_ == 0;
 	}
 
 	DataType front()
@@ -255,7 +256,7 @@ private struct FixedStringRangeInterface(DataType)
 	in(!empty)
 	{
 		++startIndex;
-		--length;
+		--length_;
 	}
 
 	typeof(this) save()
@@ -266,19 +267,24 @@ private struct FixedStringRangeInterface(DataType)
 	DataType back()
 	in(!empty)
 	{
-		return source[startIndex + (length-1)];
+		return source[startIndex + (length_-1)];
 	}
 
 	void popBack()
 	in(!empty)
 	{
-		--length;
+		--length_;
 	}
 
 	DataType opIndex(in size_t index)
-	in (index < length)
+	in (index < length_)
 	{
 		return source[startIndex + index];
+	}
+
+	auto opSlice(in size_t first, in size_t last)
+	{
+		return typeof(this)(source[(startIndex + first) .. (startIndex + last)]);
 	}
 }
 
@@ -407,6 +413,9 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	import std.range: retro;
 	assert(equal(retro(a[]), "ldoc"));
+
+	import std.range: radial;
+	assert(equal(radial(a[]), "odcl"));
 
 	FixedString!10 b;
 	b = " is nic";
