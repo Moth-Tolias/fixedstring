@@ -29,17 +29,17 @@ auto FixedString(string s)() //todo: yeet the outer template? see normalisation 
 ///
 struct FixedString(size_t maxSize, CharT = char)
 {
-	invariant (_length <= data.length);
+	invariant (length_ <= data.length);
 
 	enum size = maxSize; ///
 
-	private size_t _length;
+	private size_t length_;
 	private CharT[maxSize] data = ' ';
 
 	///
 	size_t length() const pure @nogc @safe
 	{
-		return _length;
+		return length_;
 	}
 
 	/// ditto
@@ -50,7 +50,7 @@ struct FixedString(size_t maxSize, CharT = char)
 		{
 			data[length .. rhs] = CharT.init;
 		}
-		_length = rhs;
+		length_ = rhs;
 	}
 
 	/// constructor
@@ -108,6 +108,7 @@ struct FixedString(size_t maxSize, CharT = char)
 
 	/// array features...
 	auto opSlice(in size_t first, in size_t last) @safe @nogc nothrow const pure
+	in(first <= length && last <= length)
 	{
 		auto temp = data[first .. last];
 		return temp;
@@ -283,6 +284,7 @@ private struct FixedStringRangeInterface(DataType)
 	}
 
 	auto opSlice(in size_t first, in size_t last)
+	in(first <= length_ && last <= length_)
 	{
 		return typeof(this)(source[(startIndex + first) .. (startIndex + last)]);
 	}
