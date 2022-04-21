@@ -251,6 +251,7 @@ private struct FixedStringRangeInterface(DataType)
 	}
 
 	void popFront()
+	in(!empty)
 	{
 		++startIndex;
 		--length;
@@ -267,6 +268,7 @@ private struct FixedStringRangeInterface(DataType)
 	}
 
 	void popBack()
+	in(!empty)
 	{
 		--length;
 	}
@@ -277,7 +279,6 @@ private struct FixedStringRangeInterface(DataType)
 		return source[startIndex + index];
 	}
 }
-
 
 private string resultAssign(in int n)
 {
