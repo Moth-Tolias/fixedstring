@@ -246,6 +246,7 @@ private struct FixedStringRangeInterface(DataType)
 	}
 
 	DataType front()
+	in(!empty)
 	{
 		return source[startIndex];
 	}
@@ -263,8 +264,9 @@ private struct FixedStringRangeInterface(DataType)
 	}
 
 	DataType back()
+	in(!empty)
 	{
-		return source[startIndex + length];
+		return source[startIndex + (length-1)];
 	}
 
 	void popBack()
@@ -402,6 +404,9 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	a.length = 4;
 	assert(a == "codl");
+
+	import std.range: retro;
+	assert(equal(retro(a[]), "ldoc"));
 
 	FixedString!10 b;
 	b = " is nic";
