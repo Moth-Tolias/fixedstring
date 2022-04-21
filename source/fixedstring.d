@@ -10,7 +10,7 @@ module fixedstring;
 import std.traits: isSomeChar;
 
 /// short syntax.
-auto FixedString(string s)()
+auto FixedString(string s)() //todo: yeet the outer template? see normalisation on the d blog
 {
 	import std.math.algebraic: nextPow2;
 	return FixedString!(nextPow2(s.length))(s);
@@ -74,7 +74,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	in (rhs.length <= maxSize)
 	{
 		length = rhs.length;
-		data[0 .. length] = rhs[];
+		data[0 .. length] = rhs[0 .. length];
 	}
 
 	/// ditto
@@ -103,7 +103,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	{
 		immutable oldLength = length;
 		length = length + rhs.length;
-		data[oldLength .. length] = rhs[];
+		data[oldLength .. length] = rhs[0 .. rhs.length];
 	}
 
 	/// array features...
@@ -121,9 +121,9 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	public const(CharT)[] opIndex() @safe @nogc nothrow const pure
+	auto opIndex() const
 	{
-		return data[0 .. length];
+		return FixedStringRangeInterface!CharT(data[0 .. length]);
 	}
 
 	/// ditto
@@ -158,7 +158,8 @@ struct FixedString(size_t maxSize, CharT = char)
 			return false;
 		}
 
-		return this[] == s[];
+		import std.algorithm.comparison : equal;
+		return this[].equal(s[]);
 	}
 
 	/// concatenation. note that you should probably use the ~ operator instead - only use this version when you are pressed for ram and aren't making many calls, or you will end up with template bloat.
@@ -167,8 +168,8 @@ struct FixedString(size_t maxSize, CharT = char)
 	{
 		FixedString!(s) result;
 
-		result = this[];
-		result ~= rhs[];
+		result = this;
+		result ~= rhs;
 
 		return result;
 	}
@@ -201,33 +202,11 @@ struct FixedString(size_t maxSize, CharT = char)
 		return result;
 	}
 
-	/// range interface
-	public bool empty() @safe @nogc nothrow const pure
-	{
-		return (length <= 0);
-	}
-
-	/// ditto
-	public CharT front() @safe @nogc nothrow const pure
-	{
-		return data[0];
-	}
-
-	/// ditto
-	public void popFront() @safe @nogc nothrow
-	{
-		for (auto i = 0; i < length; ++i)
-		{
-			data[i] = data[i + 1];
-		}
-		length = length - 1;
-	}
-
 	mixin(opApplyWorkaround);
 }
 
 /// readme example code
-@safe @nogc nothrow unittest
+@safe @nogc nothrow pure unittest
 {
 	FixedString!14 foo = "clang";
 	foo[0] = 'd';
@@ -246,6 +225,59 @@ struct FixedString(size_t maxSize, CharT = char)
 	immutable int[4] intArray = [1, 2, 3, 4];
 	assert(FixedString!(5, int)(intArray) == intArray);
 }
+
+private struct FixedStringRangeInterface(DataType)
+{
+	private const(DataType)[] source;
+	private size_t startIndex;
+	private size_t length;
+
+	@disable this();
+
+	package this(in DataType[] source)
+	{
+		this.source = source;
+		this.length = source.length;
+	}
+
+	bool empty() const
+	{
+		return length == 0;
+	}
+
+	DataType front()
+	{
+		return source[startIndex];
+	}
+
+	void popFront()
+	{
+		++startIndex;
+		--length;
+	}
+
+	typeof(this) save()
+	{
+		return this;
+	}
+
+	DataType back()
+	{
+		return source[startIndex + length];
+	}
+
+	void popBack()
+	{
+		--length;
+	}
+
+	DataType opIndex(in size_t index)
+	in (index < length)
+	{
+		return source[startIndex + index];
+	}
+}
+
 
 private string resultAssign(in int n)
 {
@@ -343,13 +375,15 @@ private string good(in int n, in string parameters, in bool isConst)
 	return result;
 }
 
-@safe @nogc nothrow unittest
+@safe @nogc nothrow pure unittest
 {
 	immutable string temp = "cool";
 	auto a = FixedString!8(temp);
 	assert(a[0] == 'c');
 	assert(a == "cool");
-	assert(a[] == "cool");
+
+	import std.algorithm.comparison : equal;
+	assert(a[].equal("cool")); //change: use equal
 	assert(a[0 .. $] == "cool");
 
 	a[2] = 'd';
@@ -433,7 +467,6 @@ private string good(in int n, in string parameters, in bool isConst)
 
 	assert(table[a] == 1);
 	assert(table[b] == 2);
-
 }
 
 @system unittest
