@@ -37,13 +37,13 @@ struct FixedString(size_t maxSize, CharT = char)
 	private CharT[maxSize] data = ' ';
 
 	///
-	public size_t length() const pure @nogc @safe
+	size_t length() const pure @nogc @safe
 	{
 		return _length;
 	}
 
 	/// ditto
-	public void length(in size_t rhs) pure @safe @nogc
+	void length(in size_t rhs) pure @safe @nogc
 	in (rhs <= maxSize)
 	{
 		if (rhs >= length)
@@ -54,7 +54,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// constructor
-	public this(in CharT[] rhs) @safe @nogc nothrow pure
+	this(in CharT[] rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
 		length = rhs.length;
@@ -62,7 +62,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// assignment
-	public void opAssign(in CharT[] rhs) @safe @nogc nothrow pure
+	void opAssign(in CharT[] rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
 		length = rhs.length;
@@ -70,7 +70,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	public void opAssign(T : FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure
+	void opAssign(T : FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure
 	in (rhs.length <= maxSize)
 	{
 		length = rhs.length;
@@ -78,7 +78,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	public void opOpAssign(string op)(in CharT[] rhs) @safe @nogc nothrow pure
+	void opOpAssign(string op)(in CharT[] rhs) @safe @nogc nothrow pure
 	if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
@@ -88,7 +88,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	public void opOpAssign(string op)(in CharT rhs) @safe @nogc nothrow pure
+	void opOpAssign(string op)(in CharT rhs) @safe @nogc nothrow pure
 	if (op == "~")
 	in (length + 1 <= maxSize)
 	{
@@ -97,7 +97,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	public void opOpAssign(string op, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure
+	void opOpAssign(string op, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow pure
 	if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
@@ -107,14 +107,14 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// array features...
-	public auto opSlice(in size_t first, in size_t last) @safe @nogc nothrow const pure
+	auto opSlice(in size_t first, in size_t last) @safe @nogc nothrow const pure
 	{
 		auto temp = data[first .. last];
 		return temp;
 	}
 
 	/// ditto
-	public size_t opDollar(size_t pos)() @safe @nogc nothrow const pure
+	size_t opDollar(size_t pos)() @safe @nogc nothrow const pure
 	if (pos == 0)
 	{
 		return length;
@@ -127,14 +127,14 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	public CharT opIndex(in size_t index) @safe @nogc nothrow const pure
+	CharT opIndex(in size_t index) @safe @nogc nothrow const pure
 	in (index < length)
 	{
 		return data[index];
 	}
 
 	/// ditto
-	public void opIndexAssign(in CharT rhs, in size_t index) @safe @nogc nothrow pure
+	void opIndexAssign(in CharT rhs, in size_t index) @safe @nogc nothrow pure
 	in (index <= maxSize)
 	{
 		if (index >= length)
@@ -145,13 +145,13 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// equality
-	public bool opEquals(T : FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
+	bool opEquals(T : FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
 	{
 		return this[] == rhs[];
 	}
 
 	/// ditto
-	public bool opEquals(in CharT[] s) @safe @nogc nothrow const pure
+	bool opEquals(in CharT[] s) @safe @nogc nothrow const pure
 	{
 		if (length != s.length)
 		{
@@ -163,7 +163,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// concatenation. note that you should probably use the ~ operator instead - only use this version when you are pressed for ram and aren't making many calls, or you will end up with template bloat.
-	public auto concat(size_t s, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
+	auto concat(size_t s, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
 	in (s >= length + rhs.length)
 	{
 		FixedString!(s) result;
@@ -175,7 +175,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// concatenation operator. generally, you should prefer this version.
-	public auto opBinary(string op, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
+	auto opBinary(string op, T: FixedString!n, size_t n)(in T rhs) @safe @nogc nothrow const pure
 	if (op == "~")
 	{
 		import std.math.algebraic: nextPow2;
@@ -185,14 +185,14 @@ struct FixedString(size_t maxSize, CharT = char)
 	static if (isSomeChar!CharT)
 	{
 		///
-		public const(CharT)[] toString() @safe nothrow const pure
+		const(CharT)[] toString() @safe nothrow const pure
 		{
 			return data[0 .. length].idup;
 		}
 	}
 
 	///
-	public size_t toHash() @safe @nogc nothrow const pure
+	size_t toHash() @safe @nogc nothrow const pure
 	{
 		ulong result = length;
 		foreach (CharT c; data[0 .. length])
@@ -356,7 +356,7 @@ private string good(in int n, in string parameters, in bool isConst)
 	}
 
 	string result = "
-		public int opApply(scope int " ~ delegateType(n, parameters) ~ " dg) " ~ s ~ "
+		int opApply(scope int " ~ delegateType(n, parameters) ~ " dg) " ~ s ~ "
 		{
 			int result = 0;
 
