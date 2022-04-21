@@ -70,7 +70,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	void opAssign(T : FixedString!n, size_t n)(in T rhs) //fixme
+	void opAssign(T : CharT, size_t n)(in FixedString!(n, T) rhs)
 	in (rhs.length <= maxSize)
 	{
 		length = rhs.length;
@@ -97,7 +97,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	void opOpAssign(string op, T: FixedString!n, size_t n)(in T rhs)
+	void opOpAssign(string op, T: CharT, size_t n)(in FixedString!(n, T) rhs)
 	if (op == "~")
 	in (length + rhs.length <= maxSize)
 	{
@@ -146,7 +146,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// equality
-	bool opEquals(T : FixedString!n, size_t n)(in T rhs) const //fixme
+	bool opEquals(T: CharT, size_t n)(in FixedString!(n, T) rhs) const
 	{
 		import std.algorithm.comparison : equal;
 		return this[].equal(rhs[]);
@@ -165,7 +165,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// concatenation. note that you should probably use the ~ operator instead - only use this version when you are pressed for ram and aren't making many calls, or you will end up with template bloat.
-	auto concat(size_t s, T: FixedString!n, size_t n)(in T rhs) const
+	auto concat(size_t s, T: CharT, size_t n)(in FixedString!(n, T) rhs) const
 	in (s >= length + rhs.length)
 	{
 		FixedString!(s) result;
@@ -177,7 +177,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// concatenation operator. generally, you should prefer this version.
-	auto opBinary(string op, T: FixedString!n, size_t n)(in T rhs) const
+	auto opBinary(string op, T: CharT, size_t n)(in FixedString!(n, T) rhs) const
 	if (op == "~")
 	{
 		import std.math.algebraic: nextPow2;
