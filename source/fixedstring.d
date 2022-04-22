@@ -5,8 +5,9 @@
 * Licence: AGPL-3.0 or later
 * Copyright: Susan, 2021
 */
-module fixedstring;
+module fixedstring.fixedstring;
 
+import fixedstring.opapplymixin;
 import std.traits: isSomeChar;
 
 /// short syntax.
@@ -291,102 +292,6 @@ private struct FixedStringRangeInterface(DataType)
 	}
 }
 
-private string resultAssign(in int n)
-{
-	switch (n)
-	{
-	case 1:
-		return "result = dg(temp);";
-	case 2:
-		return "result = dg(i, temp);";
-	default:
-		assert(false, "this will never happen.");
-	}
-}
-
-private string delegateType(in int n, in string attributes)
-{
-	string params;
-	switch (n)
-	{
-	case 1:
-		params = "ref CharT";
-		break;
-	case 2:
-		params = "ref int, ref CharT";
-		break;
-	default:
-		assert(false, "unsupported number of parameters.");
-	}
-
-	return "delegate(" ~ params ~ ") " ~ attributes;
-}
-
-private string opApplyWorkaround()
-{
-	// dfmt off
-	return paramNumbers("") ~
-	paramNumbers("@safe") ~
-	paramNumbers("@nogc") ~
-	paramNumbers("@safe @nogc") ~
-	paramNumbers("nothrow") ~
-	paramNumbers("@safe nothrow") ~
-	paramNumbers("@nogc nothrow") ~
-	paramNumbers("@safe @nogc nothrow") ~
-	paramNumbers("pure") ~
-	paramNumbers("pure @safe") ~
-	paramNumbers("pure @nogc") ~
-	paramNumbers("pure @safe @nogc") ~
-	paramNumbers("pure nothrow") ~
-	paramNumbers("pure @safe nothrow") ~
-	paramNumbers("pure @nogc nothrow") ~
-	paramNumbers("pure @safe @nogc nothrow");
-	// dfmt on
-}
-
-private string paramNumbers(in string params)
-{
-	// dfmt off
-	return good(1, params, true) ~
-	good(2, params, true) ~
-	good(1, params, false) ~
-	good(2, params, false);
-	// dfmt on
-}
-
-private string good(in int n, in string parameters, in bool isConst)
-{
-	string s;
-	if (isConst)
-	{
-		s = "const";
-	}
-	else
-	{
-		s = "";
-	}
-
-	string result = "
-		int opApply(scope int " ~ delegateType(n, parameters) ~ " dg) " ~ s ~ "
-		{
-			int result = 0;
-
-			for (int i = 0; i != length; ++i)
-			{
-				CharT temp = data[i];
-				" ~ resultAssign(n) ~ "
-				if (result)
-				{
-					break;
-				}
-			}
-
-			return result;
-		}";
-
-	return result;
-}
-
 @safe @nogc nothrow pure unittest
 {
 	immutable string temp = "cool";
@@ -472,7 +377,7 @@ private string good(in int n, in string parameters, in bool isConst)
 	assert(deader ~ beefer == "deadbeef");
 }
 
-@safe nothrow unittest
+@safe nothrow unittest //todo: pure?
 {
 	immutable a = FixedString!16("bepis");
 	assert (a.toString == "bepis");
