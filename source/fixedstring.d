@@ -376,7 +376,7 @@ private struct FixedStringRangeInterface(DataType)
 	assert(deader ~ beefer == "deadbeef");
 }
 
-@safe nothrow unittest //todo: pure?
+pure @safe nothrow unittest
 {
 	immutable a = FixedString!16("bepis");
 	assert (a.toString == "bepis");
