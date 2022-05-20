@@ -11,7 +11,7 @@ import fixedstring.opapplymixin;
 import std.traits: isSomeChar;
 
 /// short syntax.
-auto FixedString(string s)() //todo: yeet the outer template? see normalisation on the d blog
+auto fixedString(string s)()
 {
 	import std.math.algebraic: nextPow2;
 	return FixedString!(nextPow2(s.length))(s);
@@ -21,8 +21,8 @@ auto FixedString(string s)() //todo: yeet the outer template? see normalisation 
 @safe @nogc nothrow unittest
 {
 	enum testString = "dlang is good";
-	immutable foo = FixedString!(testString);
-	immutable bar = FixedString!16("dlang is good");
+	immutable foo = fixedString!(testString);
+	immutable bar = FixedString!16(testString);
 
 	assert(foo == bar);
 }
@@ -217,7 +217,7 @@ struct FixedString(size_t maxSize, CharT = char)
 
 	foo.length = 9;
 
-	immutable bar = FixedString!"neat";
+	immutable bar = fixedString!"neat";
 	assert (foo ~ bar == "dlang is neat");
 
 	// wchars and dchars are also supported
@@ -366,7 +366,7 @@ private struct FixedStringRangeInterface(DataType)
 	a ~= b;
 	assert(a == "deadbeef");
 
-	assert(FixedString!"aéiou" == "aéiou");
+	assert(fixedString!"aéiou" == "aéiou");
 
 	immutable char[4] dead = "dead";
 	immutable(char)[4] beef = "beef";
