@@ -111,8 +111,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	auto opSlice(in size_t first, in size_t last) const @nogc nothrow pure @safe
 	in(first <= length && last <= length)
 	{
-		auto temp = data[first .. last];
-		return temp;
+		return data[first .. last];
 	}
 
 	/// ditto
