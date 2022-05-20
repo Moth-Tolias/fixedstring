@@ -136,12 +136,8 @@ struct FixedString(size_t maxSize, CharT = char)
 
 	/// ditto
 	void opIndexAssign(in CharT rhs, in size_t index)
-	in (index <= maxSize)
+	in (index < length)
 	{
-		if (index >= length)
-		{
-			length = index + 1;
-		}
 		data[index] = rhs;
 	}
 
@@ -306,8 +302,8 @@ private struct FixedStringRangeInterface(DataType)
 	assert(a == "codl");
 	assert(a != "");
 
-	a[5] = 'd';
-	assert(a == "codl\xffd");
+	//a[5] = 'd'; //removed: builtin arrays don't do this. we shouldn't either.
+	//assert(a == "codl\xffd");
 
 	a.length = 4;
 	assert(a == "codl");
