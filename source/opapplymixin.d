@@ -1,6 +1,6 @@
 module fixedstring.opapplymixin;
 
-package string opApplyWorkaround()
+package string opApplyWorkaround() nothrow pure @safe
 {
 	// dfmt off
 	return paramNumbers("") ~
@@ -22,7 +22,7 @@ package string opApplyWorkaround()
 	// dfmt on
 }
 
-private string paramNumbers(in string params)
+private string paramNumbers(in string params) nothrow pure @safe
 {
 	// dfmt off
 	return good(1, params, true) ~
@@ -32,7 +32,7 @@ private string paramNumbers(in string params)
 	// dfmt on
 }
 
-private string delegateType(in int n, in string attributes)
+private string delegateType(in int n, in string attributes) nothrow pure @safe
 {
 	string params;
 	switch (n)
@@ -50,7 +50,7 @@ private string delegateType(in int n, in string attributes)
 	return "delegate(" ~ params ~ ") " ~ attributes;
 }
 
-private string good(in int n, in string parameters, in bool isConst)
+private string good(in int n, in string parameters, in bool isConst) nothrow pure @safe
 {
 	string s;
 	if (isConst)
@@ -83,7 +83,7 @@ private string good(in int n, in string parameters, in bool isConst)
 	return result;
 }
 
-private string resultAssign(in int n)
+private string resultAssign(in int n) nothrow pure @safe
 {
 	switch (n)
 	{
