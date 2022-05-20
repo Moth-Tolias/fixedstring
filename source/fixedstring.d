@@ -320,6 +320,11 @@ private struct FixedStringRangeInterface(DataType)
 	import std.range: radial;
 	assert(equal(radial(a[]), "odcl"));
 
+	import std.range: cycle;
+	assert(a[].cycle[4 .. 8].equal(a[]));
+
+	assert(a[].save == a[]);
+
 	FixedString!10 b;
 	b = " is nic";
 	b ~= 'e';
