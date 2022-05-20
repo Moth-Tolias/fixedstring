@@ -109,7 +109,7 @@ struct FixedString(size_t maxSize, CharT = char)
 
 	/// array features...
 	auto opSlice(in size_t first, in size_t last) const @nogc nothrow pure @safe
-	in(first <= length && last <= length)
+	in (first <= length && last <= length)
 	{
 		return data[first .. last];
 	}
@@ -142,9 +142,9 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// equality
-	bool opEquals(T: CharT, size_t n)(in FixedString!(n, T) rhs) const
+	bool opEquals(T : CharT, size_t n)(in FixedString!(n, T) rhs) const
 	{
-		import std.algorithm.comparison : equal;
+		import std.algorithm.comparison: equal;
 		return this[].equal(rhs[]);
 	}
 
@@ -156,7 +156,7 @@ struct FixedString(size_t maxSize, CharT = char)
 			return false;
 		}
 
-		import std.algorithm.comparison : equal;
+		import std.algorithm.comparison: equal;
 		return this[].equal(s[]);
 	}
 
@@ -209,12 +209,12 @@ struct FixedString(size_t maxSize, CharT = char)
 	FixedString!14 foo = "clang";
 	foo[0] = 'd';
 	foo ~= " is cool";
-	assert (foo == "dlang is cool");
+	assert(foo == "dlang is cool");
 
 	foo.length = 9;
 
 	immutable bar = fixedString!"neat";
-	assert (foo ~ bar == "dlang is neat");
+	assert(foo ~ bar == "dlang is neat");
 
 	// wchars and dchars are also supported
 	assert(FixedString!(5, wchar)("áéíóú") == "áéíóú");
@@ -229,7 +229,10 @@ private struct FixedStringRangeInterface(DataType)
 	private const(DataType)[] source;
 	private size_t startIndex;
 	private size_t length_;
-	size_t length() { return length_; }
+	size_t length()
+	{
+		return length_;
+	}
 
 	@disable this();
 
@@ -245,13 +248,13 @@ private struct FixedStringRangeInterface(DataType)
 	}
 
 	DataType front()
-	in(!empty)
+	in (!empty)
 	{
 		return source[startIndex];
 	}
 
 	void popFront()
-	in(!empty)
+	in (!empty)
 	{
 		++startIndex;
 		--length_;
@@ -263,13 +266,13 @@ private struct FixedStringRangeInterface(DataType)
 	}
 
 	DataType back()
-	in(!empty)
+	in (!empty)
 	{
-		return source[startIndex + (length_-1)];
+		return source[startIndex + (length_ - 1)];
 	}
 
 	void popBack()
-	in(!empty)
+	in (!empty)
 	{
 		--length_;
 	}
@@ -281,7 +284,7 @@ private struct FixedStringRangeInterface(DataType)
 	}
 
 	auto opSlice(in size_t first, in size_t last)
-	in(first <= length_ && last <= length_)
+	in (first <= length_ && last <= length_)
 	{
 		return typeof(this)(source[(startIndex + first) .. (startIndex + last)]);
 	}
@@ -294,7 +297,7 @@ private struct FixedStringRangeInterface(DataType)
 	assert(a[0] == 'c');
 	assert(a == "cool");
 
-	import std.algorithm.comparison : equal;
+	import std.algorithm.comparison: equal;
 	assert(a[].equal("cool")); //change: use equal
 	assert(a[0 .. $] == "cool");
 
@@ -380,7 +383,7 @@ private struct FixedStringRangeInterface(DataType)
 pure @safe nothrow unittest
 {
 	immutable a = FixedString!16("bepis");
-	assert (a.toString == "bepis");
+	assert(a.toString == "bepis");
 
 	int[FixedString!16] table;
 	table[a] = 1;
@@ -395,7 +398,7 @@ pure @safe nothrow unittest
 @system unittest
 {
 	import std.exception;
-	import core.exception : AssertError;
+	import core.exception: AssertError;
 
 	assertThrown!AssertError(FixedString!2("too long"));
 
