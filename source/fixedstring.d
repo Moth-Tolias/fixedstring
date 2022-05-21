@@ -71,7 +71,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	}
 
 	/// ditto
-	void opAssign(T : CharT, size_t n)(in FixedString!(n, T) rhs)
+	void opAssign(T: CharT, size_t n)(in FixedString!(n, T) rhs)
 	in (rhs.length <= maxSize)
 	{
 		length = rhs.length;
@@ -298,16 +298,14 @@ private struct FixedStringRangeInterface(DataType)
 	assert(a == "cool");
 
 	import std.algorithm.comparison: equal;
-	assert(a[].equal("cool")); //change: use equal
+	assert(a[].equal("cool"));
 	assert(a[0 .. $] == "cool");
 
 	a[2] = 'd';
 	assert(a == "codl");
 	assert(a != "");
 
-	//a[5] = 'd'; //removed: builtin arrays don't do this. we shouldn't either.
-	//assert(a == "codl\xffd");
-
+	a ~= "d";
 	a.length = 4;
 	assert(a == "codl");
 
@@ -397,7 +395,7 @@ pure @safe nothrow unittest
 
 @system unittest
 {
-	import std.exception;
+	import std.exception: assertThrown;
 	import core.exception: AssertError;
 
 	assertThrown!AssertError(FixedString!2("too long"));

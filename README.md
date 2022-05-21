@@ -8,12 +8,12 @@ void main() @safe @nogc nothrow
 	FixedString!14 foo = "clang";
 	foo[0] = 'd';
 	foo ~= " is cool";
-	assert (foo == "dlang is cool");
+	assert(foo == "dlang is cool");
 
 	foo.length = 9;
 
-	auto bar = FixedString!"neat";
-	assert (foo ~ bar == "dlang is neat");
+	immutable bar = fixedString!"neat";
+	assert(foo ~ bar == "dlang is neat");
 
 	// wchars and dchars are also supported
 	assert(FixedString!(5, wchar)("áéíóú") == "áéíóú");
@@ -23,6 +23,8 @@ void main() @safe @nogc nothrow
 	assert(FixedString!(5, int)(intArray) == intArray);
 }
 ```
+
+read [the documentation](https://fixedstring.dpldocs.info/fixedstring.html) for more info!
 
 # licence
 AGPL-3.0 or later
