@@ -1,6 +1,8 @@
 module fixedstring.opapplymixin;
 
-package(fixedstring) string opApplyWorkaround() nothrow pure @safe
+package(fixedstring):
+
+string opApplyWorkaround() nothrow pure @safe
 {
 	// dfmt off
 	return paramNumbers("") ~
