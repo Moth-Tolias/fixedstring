@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - this changelog! 🎉
 - a new range interface - a _random access range with slicing_ - has been added that more closely follows standard practice, replacing the previous implementation that confused ranges with containers.
  - for more information on ranges, see [std.range.primitives](https://dlang.org/phobos/std_range_primitives.html).
+- the previously existing unittests have been cleaned up and added to the documentation.
 
 ### Changed
 - opIndex() now returns a range rather than a slice.

@@ -207,80 +207,64 @@ struct FixedString(size_t maxSize, CharT = char)
 @safe @nogc nothrow pure unittest
 {
 	immutable string temp = "cool";
-	auto a = FixedString!8(temp);
-	assert(a[0] == 'c');
-	assert(a == "cool");
+	auto foo = FixedString!8(temp);
+	assert(foo[0] == 'c');
+	assert(foo == "cool");
 
 	import std.algorithm.comparison: equal;
-	assert(a[].equal("cool"));
-	assert(a[0 .. $] == "cool");
+	assert(foo[].equal("cool"));
+	assert(foo[0 .. $] == "cool");
 
-	a[2] = 'd';
-	assert(a == "codl");
-	assert(a != "");
+	foo[2] = 'd';
+	assert(foo == "codl");
+	assert(foo != "");
 
-	a ~= "d";
-	a.length = 4;
-	assert(a == "codl");
+	foo ~= "d";
+	foo.length = 4;
+	assert(foo == "codl");
 
-	a.length = 6;
-	assert(a == "codl\xff\xff");
+	foo.length = 6;
+	assert(foo == "codl\xff\xff");
 
-	a.length = 4;
-	assert(a == "codl");
+	foo.length = 4;
+	assert(foo == "codl");
 
 	import std.range: retro;
-	assert(equal(retro(a[]), "ldoc"));
+	assert(equal(retro(foo[]), "ldoc"));
 
 	import std.range: radial;
-	assert(equal(radial(a[]), "odcl"));
+	assert(equal(radial(foo[]), "odcl"));
 
 	import std.range: cycle;
-	assert(a[].cycle[4 .. 8].equal(a[]));
+	assert(foo[].cycle[4 .. 8].equal(foo[]));
 
-	assert(a[].save == a[]);
+	assert(foo[].save == foo[]);
 
-	FixedString!10 b;
-	b = " is nic";
-	b ~= 'e';
-	assert(a ~ b == "codl is nice");
-	assert(a.concat!16(b) == "codl is nice");
-	assert(a ~ b == a.concat!16(b));
+	FixedString!10 bar;
+	bar = " is nic";
+	bar ~= 'e';
+
+	immutable truth = fixedString!"codl is nice";
+
+	assert(foo ~ bar == truth);
+	assert(foo.concat!16(bar) == truth);
+	assert(foo ~ bar == foo.concat!16(bar));
 
 	FixedString!10 d;
-	d = a;
+	d = foo;
+	d.length = 4;
 
-	foreach (i, char c; a)
+	foreach (i, char c; d)
 	{
-		switch (i)
-		{
-		case 0:
-			assert(c == 'c');
-			break;
-
-		case 1:
-			assert(c == 'o');
-			break;
-
-		case 2:
-			assert(c == 'd');
-			break;
-
-		case 3:
-			assert(c == 'l');
-			break;
-
-		default:
-			assert(false);
-		}
+		assert(c == foo[i]);
 	}
 
-	a = "de";
-	a ~= "ad";
-	assert(a == "dead");
-	b = "beef";
-	a ~= b;
-	assert(a == "deadbeef");
+	foo = "de";
+	foo ~= "ad";
+	assert(foo == "dead");
+	bar = "beef";
+	foo ~= bar;
+	assert(foo == "deadbeef");
 
 	assert(fixedString!"aéiou" == "aéiou");
 
