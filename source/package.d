@@ -203,93 +203,7 @@ struct FixedString(size_t maxSize, CharT = char)
 	mixin(opApplyWorkaround);
 }
 
-/// readme example code
-@safe @nogc nothrow pure unittest
-{
-	FixedString!14 foo = "clang";
-	foo[0] = 'd';
-	foo ~= " is cool";
-	assert(foo == "dlang is cool");
-
-	foo.length = 9;
-
-	immutable bar = fixedString!"neat";
-	assert(foo ~ bar == "dlang is neat");
-
-	// wchars and dchars are also supported
-	assert(FixedString!(5, wchar)("áéíóú") == "áéíóú");
-
-	// in fact, any type is:
-	immutable int[4] intArray = [1, 2, 3, 4];
-	assert(FixedString!(5, int)(intArray) == intArray);
-}
-
-private struct FixedStringRangeInterface(DataType)
-{
-	private const(DataType)[] source;
-	private size_t startIndex;
-	private size_t length_;
-	size_t length()
-	{
-		return length_;
-	}
-
-	@disable this();
-
-	package this(in DataType[] source)
-	{
-		this.source = source;
-		this.length_ = source.length;
-	}
-
-	bool empty() const
-	{
-		return length_ == 0;
-	}
-
-	DataType front()
-	in (!empty)
-	{
-		return source[startIndex];
-	}
-
-	void popFront()
-	in (!empty)
-	{
-		++startIndex;
-		--length_;
-	}
-
-	typeof(this) save()
-	{
-		return this;
-	}
-
-	DataType back()
-	in (!empty)
-	{
-		return source[startIndex + (length_ - 1)];
-	}
-
-	void popBack()
-	in (!empty)
-	{
-		--length_;
-	}
-
-	DataType opIndex(in size_t index)
-	in (index < length_)
-	{
-		return source[startIndex + index];
-	}
-
-	auto opSlice(in size_t first, in size_t last)
-	in (first <= length_ && last <= length_)
-	{
-		return typeof(this)(source[(startIndex + first) .. (startIndex + last)]);
-	}
-}
-
+///
 @safe @nogc nothrow pure unittest
 {
 	immutable string temp = "cool";
@@ -378,6 +292,7 @@ private struct FixedStringRangeInterface(DataType)
 	assert(deader ~ beefer == "deadbeef");
 }
 
+///
 pure @safe nothrow unittest
 {
 	immutable a = FixedString!16("bepis");
@@ -393,6 +308,27 @@ pure @safe nothrow unittest
 	assert(table[b] == 2);
 }
 
+/// readme example code
+@safe @nogc nothrow pure unittest
+{
+	FixedString!14 foo = "clang";
+	foo[0] = 'd';
+	foo ~= " is cool";
+	assert(foo == "dlang is cool");
+
+	foo.length = 9;
+
+	immutable bar = fixedString!"neat";
+	assert(foo ~ bar == "dlang is neat");
+
+	// wchars and dchars are also supported
+	assert(FixedString!(5, wchar)("áéíóú") == "áéíóú");
+
+	// in fact, any type is:
+	immutable int[4] intArray = [1, 2, 3, 4];
+	assert(FixedString!(5, int)(intArray) == intArray);
+}
+
 @system unittest
 {
 	import std.exception: assertThrown;
@@ -403,4 +339,70 @@ pure @safe nothrow unittest
 	FixedString!2 a = "uh";
 	assertThrown!AssertError(a[69] = 'a');
 	assertThrown!AssertError(a.concat!1(a));
+}
+
+private struct FixedStringRangeInterface(DataType)
+{
+	private const(DataType)[] source;
+	private size_t startIndex;
+	private size_t length_;
+	size_t length()
+	{
+		return length_;
+	}
+
+	@disable this();
+
+	package this(in DataType[] source)
+	{
+		this.source = source;
+		this.length_ = source.length;
+	}
+
+	bool empty() const
+	{
+		return length_ == 0;
+	}
+
+	DataType front()
+	in (!empty)
+	{
+		return source[startIndex];
+	}
+
+	void popFront()
+	in (!empty)
+	{
+		++startIndex;
+		--length_;
+	}
+
+	typeof(this) save()
+	{
+		return this;
+	}
+
+	DataType back()
+	in (!empty)
+	{
+		return source[startIndex + (length_ - 1)];
+	}
+
+	void popBack()
+	in (!empty)
+	{
+		--length_;
+	}
+
+	DataType opIndex(in size_t index)
+	in (index < length_)
+	{
+		return source[startIndex + index];
+	}
+
+	auto opSlice(in size_t first, in size_t last)
+	in (first <= length_ && last <= length_)
+	{
+		return typeof(this)(source[(startIndex + first) .. (startIndex + last)]);
+	}
 }
