@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - an incorrect directory structure was preventing the dub package from building.
+- some syntax in this changelog had been left out.
 
 ## [2.0.0] - 2022-05-22
 ### Added
@@ -16,13 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - the previously existing unittests have been cleaned up and added to the documentation.
 
 ### Changed
-- opIndex() now returns a range rather than a slice.
+- `opIndex()` now returns a range rather than a slice.
  - to compare `foo[]` with an array of elements, use `std.algorithm.comparison.equal` instead of `==`.
 - gc using, throwing, inpure, and `@system` - using types are now permitted as element types. note that using such types will make the `FixedString` use those attributes accordingly; you cannot have a `FixedString!(N, SomeClass)` and expect it to work in `@nogc` code.
 - the `FixedString!"string"` helper template has been changed to `fixedString!"string"`, so as to conform with the standard D style.
 
 ### Removed
-- empty(), front(), and popFront() have been removed. use the new range interface instead.
+- `empty()`, `front()`, and `popFront()` have been removed. use the new range interface instead.
 - it is no longer possible to modify out-of-bounds elements with `opIndex`, even if the maximum size of the `FixedString` would allow it. change `length` first before modifying, or use the `~=` operator.
 
 ### Fixed
